@@ -1,0 +1,13 @@
+[Unit]
+Description=Ferme Zoom quand il tourne seul dans le tray
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/.local/bin/zoom-veille.py
+Restart=always
+RestartSec=10
+Nice=10
+
+[Install]
+WantedBy=graphical-session.target
