@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/banner-zoom-veille.png" alt="zoom-veille" width="100%"></p>
 
-<p align="center"><img src="https://img.shields.io/badge/platform-Linux%20·%20KDE%20Plasma%20Wayland-000000?style=flat-square" alt="platform"> <img src="https://img.shields.io/badge/python-3-3776ab?style=flat-square" alt="python"> <img src="https://img.shields.io/badge/license-MIT-610089?style=flat-square" alt="license"></p>
+<p align="center"><img src="https://img.shields.io/badge/platform-Linux%20·%20KDE%20Plasma%20Wayland-000000?style=flat-square" alt="platform"> <img src="https://img.shields.io/badge/rust-2021-dea584?style=flat-square" alt="rust"> <img src="https://img.shields.io/badge/license-MIT-610089?style=flat-square" alt="license"></p>
 
 <p align="center"><a href="README.fr.md">🇫🇷 Version française</a></p>
 
@@ -28,6 +28,6 @@ No X11 on Wayland, so it lists windows through KWin's KRunner "windows" runner o
 git clone https://github.com/glime32/zoom-veille && cd zoom-veille && ./install.sh
 ```
 
-Settings (`DELAI`, `PAS`) at the top of `zoom-veille.py`. Disable with `systemctl --user disable --now zoom-veille.service`.
+You need Rust (`sudo pacman -S rust`); the script builds the binary into `~/.local/bin` and replaces the old Python version if it was installed. Settings at the top of `src/main.rs`: `DELAY` (5 min), `STEP_ZOOM` (30 s), `STEP_IDLE` (60 s). To try it without waiting 5 minutes: `ZOOM_VEILLE_DELAI=20 target/release/zoom-veille`. Disable with `systemctl --user disable --now zoom-veille.service`.
 
-When Zoom isn't running, the script only reads `/proc` every 30 s: 0 % CPU, ~10 MB RAM.
+When Zoom isn't running, the service only looks at `/proc` once a minute (with 5 s of timer slack so the kernel can batch the wakeup): 0 % CPU and under 3 MB of RAM, versus ~15 MB for the old Python version. The PipeWire / KWin checks only run while Zoom is open, every 30 s.

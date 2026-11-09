@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/banner-zoom-veille.png" alt="zoom-veille" width="100%"></p>
 
-<p align="center"><img src="https://img.shields.io/badge/platform-Linux%20·%20KDE%20Plasma%20Wayland-000000?style=flat-square" alt="platform"> <img src="https://img.shields.io/badge/python-3-3776ab?style=flat-square" alt="python"> <img src="https://img.shields.io/badge/license-MIT-610089?style=flat-square" alt="license"></p>
+<p align="center"><img src="https://img.shields.io/badge/platform-Linux%20·%20KDE%20Plasma%20Wayland-000000?style=flat-square" alt="platform"> <img src="https://img.shields.io/badge/rust-2021-dea584?style=flat-square" alt="rust"> <img src="https://img.shields.io/badge/license-MIT-610089?style=flat-square" alt="license"></p>
 
 <p align="center"><a href="README.md">🇬🇧 English version</a></p>
 
@@ -16,7 +16,7 @@ Seulement si, pendant 5 minutes d'affilée :
 - aucun flux audio Zoom n'est actif dans PipeWire ;
 - la caméra n'est pas ouverte par Zoom.
 
-Une notification « Zoom fermé » s'affiche quand ça arrive. Si KWin ne répond pas, le script ne ferme rien par sécurité.
+Une notification « Zoom fermé » s'affiche quand ça arrive. Si KWin ne répond pas, le service ne ferme rien par sécurité.
 
 ## Comment il voit les fenêtres
 
@@ -28,12 +28,14 @@ Pas d'accès X11 sous Wayland, donc il passe par le runner « fenêtres » de KW
 ./install.sh
 ```
 
-La dernière ligne doit afficher `active`. Réglages (`DELAI`, `PAS`) en haut de `zoom-veille.py`.
+Il faut Rust (`sudo pacman -S rust`) : le script compile le binaire et le met dans `~/.local/bin`. La dernière ligne doit afficher `active`. Si l'ancienne version Python était installée, elle est remplacée.
+
+Réglages en haut de `src/main.rs` : `DELAY` (5 min), `STEP_ZOOM` (30 s), `STEP_IDLE` (60 s). Pour essayer sans attendre 5 minutes : `ZOOM_VEILLE_DELAI=20 target/release/zoom-veille`.
 
 Désactiver : `systemctl --user disable --now zoom-veille.service`
 
 ## Consommation
 
-Quand Zoom n'est pas lancé, le script lit juste `/proc` toutes les 30 s : 0 % de CPU et une dizaine de Mo de RAM. Les vérifications PipeWire / KWin ne tournent que si Zoom est ouvert.
+Quand Zoom n'est pas lancé, le service jette juste un œil à `/proc` une fois par minute (avec 5 s de tolérance sur le réveil, pour que le noyau le groupe avec d'autres) : 0 % de CPU et moins de 3 Mo de RAM, contre une quinzaine pour l'ancienne version Python. Les vérifications PipeWire / KWin ne tournent que si Zoom est ouvert, toutes les 30 s.
 
 Testé sur KDE Plasma 6 (Wayland). Une fois Zoom fermé, ses notifications (chat, invitations) n'arrivent plus jusqu'à ce qu'on le rouvre.

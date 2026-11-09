@@ -4,7 +4,7 @@ After=graphical-session.target
 PartOf=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/python3 %h/.local/bin/zoom-veille.py
+ExecStart=%h/.local/bin/zoom-veille
 Restart=always
 RestartSec=10
 Nice=10
